@@ -1,4 +1,5 @@
 import Data.List (intercalate)
+import GHC.Exts (sortWith)
 
 -- Problem 46
 -- Define predicates and, or, nand, nor, xor, impl, equ, not
@@ -62,4 +63,38 @@ gray n = map ('0':) rest ++ reverse (map ('1':) rest) where rest = gray (n-1)
 -- huffman
 -- Create huffman codes for given frequency distribution
 huffman :: [(Char, Int)] -> [(Char, String)]
-huffman = error "TODO: huffman algorithm"
+huffman freqs = let tree = huffmanTree freqs in [(c, getCode tree c)| (c,n)<- freqs]
+
+data HuffmanTree = Leaf Char Int| Head [Char] Int  HuffmanTree HuffmanTree
+
+freqToLeaf :: (Char, Int) -> HuffmanTree
+freqToLeaf (c, n) = Leaf c n
+
+getChars :: HuffmanTree -> [Char]
+getChars (Leaf c _) = [c]
+getChars (Head cs _ _ _) = cs
+
+getFreq :: HuffmanTree -> Int
+getFreq (Leaf _ n) = n
+getFreq (Head _ n _ _) = n
+
+joinTree :: HuffmanTree -> HuffmanTree -> HuffmanTree
+joinTree a b = Head (getChars a ++ getChars b) (getFreq a + getFreq b) a b
+
+
+huffmanTree :: [(Char, Int)] -> HuffmanTree
+huffmanTree freqs = huffmanTree' (sortWith getFreq (map freqToLeaf freqs)) where
+                        huffmanTree' [x] = x
+                        huffmanTree' (x:y:zs) = huffmanTree'(sortWith getFreq ((joinTree x y):zs))
+
+
+getCode :: HuffmanTree -> Char -> String
+getCode (Leaf c1 _) c2 = case c1 == c2 of
+                            True -> ""
+                            False -> error "Invalid Tree"
+getCode (Head cs _ l r) c = case c `elem` (getChars l) of
+                                True -> '0':getCode l c
+                                False -> case c `elem` (getChars r) of
+                                    True -> '1':getCode r c
+                                    False -> error "Character not found"
+
