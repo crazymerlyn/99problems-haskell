@@ -1,3 +1,6 @@
+import Data.List
+import Data.Maybe
+
 data Tree a = Empty | Branch a (Tree a) (Tree a)
               deriving (Show, Eq)
 
@@ -64,7 +67,19 @@ hbalTree :: a -> Int -> [Tree a]
 hbalTree x n = hbaltrees !! n where
                 hbaltrees = [Empty]:[Branch x Empty Empty] : 
                             zipWith combine hbaltrees (tail hbaltrees)
-                combine ts shortts = [Branch x l r | 
+                combine shortts ts = [Branch x l r | 
                             (ls, rs) <- [(ts, shortts), (ts, ts), (shortts, ts)],
                             l <- ls, r <- rs]
+
+-- Problem 60
+-- hbalTreeNodes
+-- Construct height-balanced binary trees with a given number of nodes
+hbalTreeNodes :: a -> Int -> [Tree a]
+hbalTreeNodes x n = concatMap filterTrees [minHeight .. maxHeight] where
+                        filterTrees = filter ((n==) . countNodes) . hbalTree x
+                        minNodesSeq = 0:1:zipWith ((+) . (1+)) minNodesSeq (tail minNodesSeq)
+                        minHeight = ceiling $ logBase 2 $ fromIntegral (n+1)
+                        maxHeight = (fromJust $ findIndex (>n) minNodesSeq) - 1
+                        countNodes Empty = 0
+                        countNodes (Branch _ l r) = countNodes l + countNodes r + 1
 
