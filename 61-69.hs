@@ -59,3 +59,17 @@ completeBinaryTree n = Branch 'x' l r where
                         l = completeBinaryTree lsize
                         r = completeBinaryTree rsize
 
+
+-- Problem 64
+-- layout
+-- Write a function to annonate each node of the tree with a position,
+-- where (1, 1) is top left corner
+layout :: Tree a -> Tree (a, (Int, Int))
+layout t = _layout t 1 1 where
+            _layout Empty _ _ = Empty
+            _layout (Branch x l r) order depth = Branch (x, (order + countNodes l, depth)) _l _r where
+                                                    countNodes Empty = 0
+                                                    countNodes (Branch _ l r) = 1 + countNodes l + countNodes r
+                                                    _l = _layout l order (depth + 1)
+                                                    _r = _layout r (order + countNodes l + 1) (depth + 1)
+
