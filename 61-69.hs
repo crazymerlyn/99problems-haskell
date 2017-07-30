@@ -73,3 +73,40 @@ layout t = _layout t 1 1 where
                                                     _l = _layout l order (depth + 1)
                                                     _r = _layout r (order + countNodes l + 1) (depth + 1)
 
+
+
+-- Problem 65
+-- layout2
+-- Write a function to annonate each node of the tree with a position,
+-- where (1, 1) is top left corner
+layout2 :: Tree a -> Tree (a, (Int, Int))
+layout2 t = _layout2 t (2 ^ h - 1) 1 where
+                height Empty = 0
+                height (Branch _ l r) = 1 + max (height l) (height r)
+                h = height t - 1
+                _layout2 Empty _ _ = Empty
+                _layout2 (Branch elem l r ) x y = Branch (elem, (x, y)) _l _r where
+                    d = div (x + 1) 2
+                    _l = _layout2 l (x - d) (y+1)
+                    _r = _layout2 r (x + d) (y+1)
+
+
+-- Problem 67A
+-- stringToTree, treeToString
+-- A string representation of binary trees
+stringToTree :: [Char] -> Tree Char
+stringToTree s = let (x, y) = _help s in x where
+                _help "" = (Empty, "")
+                _help [a] = (Branch a Empty Empty, "")
+                _help (',':rs) = (Empty, rs)
+                _help (a:b:rs) = case b of
+                    '(' -> (Branch a l r, remaining) where
+                        (r, remaining) = _help after_left
+                        (l, after_left) = _help rs
+                    ')' -> (Branch a Empty Empty, rs)
+                    ',' -> (Branch a Empty Empty, rs)
+
+treeToString :: Tree Char -> [Char]
+treeToString Empty = ""
+treeToString (Branch c Empty Empty) = [c]
+treeToString (Branch c l r) = [c] ++ "(" ++ treeToString l ++ "," ++ treeToString r ++ ")"
