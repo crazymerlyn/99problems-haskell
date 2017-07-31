@@ -99,14 +99,39 @@ stringToTree s = let (x, y) = _help s in x where
                 _help "" = (Empty, "")
                 _help [a] = (Branch a Empty Empty, "")
                 _help (',':rs) = (Empty, rs)
+                _help (')':rs) = (Empty, rs)
                 _help (a:b:rs) = case b of
                     '(' -> (Branch a l r, remaining) where
                         (r, remaining) = _help after_left
                         (l, after_left) = _help rs
-                    ')' -> (Branch a Empty Empty, rs)
+                    ')' -> case rs of 
+                        ',':rss   -> (Branch a Empty Empty, rss)
+                        otherwise -> (Branch a Empty Empty, rs)
                     ',' -> (Branch a Empty Empty, rs)
 
 treeToString :: Tree Char -> [Char]
 treeToString Empty = ""
 treeToString (Branch c Empty Empty) = [c]
 treeToString (Branch c l r) = [c] ++ "(" ++ treeToString l ++ "," ++ treeToString r ++ ")"
+
+
+-- Problem 68
+-- preorder, inorder, preInTree
+-- Write functions to get the preorder and inorder traversal of a tree
+-- Write a function to get the original tree from preorder and inorder traversals
+preorder :: Tree a -> [a]
+preorder Empty = []
+preorder (Branch x l r) = [x] ++ preorder l ++ preorder r
+
+inorder :: Tree a -> [a]
+inorder Empty = []
+inorder (Branch x l r) = inorder l ++ [x] ++ inorder r
+
+preInTree :: Eq a => [a] -> [a] -> Tree a
+preInTree [] [] = Empty
+preInTree po@(x:xs) io = Branch x l r where
+                            (lio, _:rio) = break (==x) io
+                            (lpo, rpo) = splitAt (length lio) xs
+                            l = preInTree lpo lio
+                            r = preInTree rpo rio
+
