@@ -135,3 +135,18 @@ preInTree po@(x:xs) io = Branch x l r where
                             l = preInTree lpo lio
                             r = preInTree rpo rio
 
+
+-- Problem 69
+-- ds2tree, tree2ds
+-- Dotstring representation of binary trees
+ds2tree :: [Char] -> (Tree Char, [Char])
+ds2tree "" = (Empty, "")
+ds2tree ('.':xs) = (Empty, xs)
+ds2tree (c:rs) = (Branch c l r, rest) where
+                    (l, after_left) = ds2tree rs
+                    (r, rest) = ds2tree after_left
+
+tree2ds :: Tree Char -> [Char]
+tree2ds Empty = "."
+tree2ds (Branch x l r) = x:tree2ds l ++ tree2ds r
+
