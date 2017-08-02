@@ -29,3 +29,10 @@ ipl :: Tree a -> Int
 ipl (Node _ xs) = sum [pathLength x 1 | x <- xs] where
                     pathLength (Node _ rs) n = n + sum [pathLength r (n+1) | r <- rs]
 
+
+-- Problem 72
+-- bottomUp
+-- Construct the bottom-up order sequence of the tree nodes
+bottomUp :: Tree a -> [a]
+bottomUp (Node x ts) = concatMap bottomUp ts ++ [x]
+
