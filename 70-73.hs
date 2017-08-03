@@ -36,3 +36,11 @@ ipl (Node _ xs) = sum [pathLength x 1 | x <- xs] where
 bottomUp :: Tree a -> [a]
 bottomUp (Node x ts) = concatMap bottomUp ts ++ [x]
 
+
+-- Problem 73
+-- lisp
+-- Lisp-like tree representation
+lisp :: Tree Char -> [Char]
+lisp (Node c []) = [c]
+lisp (Node c children) = "(" ++ [c] ++ " " ++ unwords (map lisp children) ++ ")"
+
