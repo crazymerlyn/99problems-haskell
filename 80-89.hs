@@ -42,3 +42,13 @@ adjToFri = graphToFri . adjToGraph
 friToAdj :: Eq a => Friendly a -> Adjacency a
 friToAdj = graphToAdj . friToGraph
 
+
+-- Problem 81
+-- paths
+-- Paths from one node to another one
+paths :: Eq a => a -> a -> [(a, a)] -> [[a]]
+paths x y zs = _paths [y] x zs where
+                _paths ys@(y:_) x zs = if x == y then [ys] else concatMap f zs where
+                                        f (x1, y1) = if y1 == y && not (x1 `elem` ys) then _paths (x1:ys) x zs else []
+
+
