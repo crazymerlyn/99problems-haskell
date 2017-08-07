@@ -52,3 +52,15 @@ paths x y zs = _paths [y] x zs where
                                         f (x1, y1) = if y1 == y && not (x1 `elem` ys) then _paths (x1:ys) x zs else []
 
 
+
+-- Problem 82
+-- cycle
+-- Cycle from a given node
+cycle :: Eq a => a -> [(a, a)] -> [[a]]
+cycle x es = _cycle [x] es where
+                _cycle xs es = concatMap f es where
+                    last = xs !! (length xs - 1)
+                    first = xs !! 0
+                    f (x, y) = if x == last && y == first then [xs ++ [y]] else
+                               if x == last && not (y `elem` xs) then _cycle (xs ++ [y]) es else []
+
