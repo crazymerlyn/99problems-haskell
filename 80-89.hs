@@ -1,3 +1,5 @@
+import Data.List
+
 data Graph a = Graph [a] [(a, a)] deriving (Show, Eq)
 
 data Adjacency a = Adj [(a, [a])] deriving (Show, Eq)
@@ -63,4 +65,18 @@ cycle x es = _cycle [x] es where
                     first = xs !! 0
                     f (x, y) = if x == last && y == first then [xs ++ [y]] else
                                if x == last && not (y `elem` xs) then _cycle (xs ++ [y]) es else []
+
+-- Problem 83
+-- spantrees
+-- Construct all spanning trees
+spantrees :: (Eq a, Ord a) => Graph a -> [Graph a]
+spantrees (Graph [] _) = []
+spantrees (Graph [x] _) = [Graph [x] []]
+spantrees (Graph xs es) = nubBy (\(Graph _ es1) (Graph _ es2) -> sort es1 == sort es2) $ concat [concatMap (f x) (gs x) | x <- xs] where
+                                without x (a, b) = a /= x && b /= x
+                                gs x = spantrees (Graph (filter (/= x) xs) (filter (without x) es))
+                                f v (Graph vs es2) = [Graph (v:vs) (e2:es2) | e2<-es, not (without v e2)]
+
+k4 = Graph ['a', 'b', 'c', 'd']
+     [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'a'), ('a', 'c'), ('b', 'd')]
 
