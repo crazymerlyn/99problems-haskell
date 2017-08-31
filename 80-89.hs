@@ -1,4 +1,5 @@
 import Data.List
+import Data.Ord
 
 data Graph a = Graph [a] [(a, a)] deriving (Show, Eq)
 
@@ -79,4 +80,21 @@ spantrees (Graph xs es) = nubBy (\(Graph _ es1) (Graph _ es2) -> sort es1 == sor
 
 k4 = Graph ['a', 'b', 'c', 'd']
      [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'a'), ('a', 'c'), ('b', 'd')]
+
+
+-- Problem 84
+-- prim
+-- Construct the minimum spanning tree
+prim :: (Eq a, Ord b) => [a] -> [(a, a, b)] -> [(a, a, b)]
+prim [] _ = []
+prim xs@(x:_) es = prim' xs es [x] where
+                    contains x (a, b, _) = x == a || x == b
+                    prim' xs es seen = if length seen == length xs then [] else (nextEdge: prim' xs es (seen ++ [next])) where
+                      trd (_,_,w) = w
+                      xor a b = (a || b) && (not (a && b))
+                      f (a, b, _) = (a `elem` seen) `xor` (b `elem` seen)
+                      possibs = filter f es
+                      nextEdge = minimumBy (comparing trd) possibs
+                      g (a, b, _) = if a `elem` seen then b else a
+                      next = g nextEdge
 
