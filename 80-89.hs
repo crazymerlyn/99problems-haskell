@@ -98,3 +98,18 @@ prim xs@(x:_) es = prim' xs es [x] where
                       g (a, b, _) = if a `elem` seen then b else a
                       next = g nextEdge
 
+
+-- Problem 85
+-- iso
+-- Graph isomorphism
+iso :: (Eq a, Ord a, Eq b, Ord b) => Graph a -> Graph b -> Bool
+iso g1 g2 = any (\f -> graphEqual (f g1) g2) (makeMappings g1 g2) where
+                matching [] x = error "No matching element found"
+                matching ((a,b):ys) x = if a == x then b else matching ys x
+                g mapping (Graph xs es) = 
+                            Graph (map (matching mapping) xs) [(matching mapping a, matching mapping b) | (a,b)<-es]
+                makeMappings (Graph xs1 _) (Graph xs2 _) = if length xs1 /= length xs2 then [] else
+                                                            [g (zip perm xs2) | perm <- permutations xs1]
+                graphEqual (Graph xs1 es1) (Graph xs2 es2) = sort xs1 == sort xs2 && sort es1 == sort es2
+
+
