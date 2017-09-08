@@ -113,3 +113,30 @@ iso g1 g2 = any (\f -> graphEqual (f g1) g2) (makeMappings g1 g2) where
                 graphEqual (Graph xs1 es1) (Graph xs2 es2) = sort xs1 == sort xs2 && sort es1 == sort es2
 
 
+-- Problem 86
+-- degree, sortedDegrees, kcolor
+-- Write a function that determines the degree of a given node.
+-- Write a function that generates a list of all nodes of a graph
+-- sorted according to decreasing degree.
+-- Use Welch-Powell's algorithm to paint the nodes of a graph in such
+-- a way that adjacent nodes have different colors.
+degree :: Eq a => Graph a -> a -> Int
+degree (Graph _ es) x = length $ filter (\(a, b) -> x == a || x == b) es
+
+sortedDegrees :: Eq a => Graph a -> [a]
+sortedDegrees g@(Graph xs es) = reverse $ sortBy (comparing (degree g)) xs
+
+kcolor :: (Eq a, Ord a) => Graph a -> [(a, Int)]
+kcolor g = kcolor' adj 1 [] where
+            adj = sortByDegrees g
+            sortByDegrees g = sortBy (comparing (length . snd)) adj' where
+                Adj adj' = graphToAdj g
+            kcolor' [] _ acc = acc
+            kcolor' xs n acc = kcolor' newxs (n+1) acc' where
+                newxs = [x | x <- xs, notElem (fst x, n) acc']
+                acc' = color xs n acc
+                color [] _ acc = acc
+                color ((v,e):xs) n acc = if any (\x -> (x, n) `elem` acc) e
+                                            then color xs n acc
+                                            else color xs n ((v, n):acc)
+
