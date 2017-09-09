@@ -140,3 +140,13 @@ kcolor g = kcolor' adj 1 [] where
                                             then color xs n acc
                                             else color xs n ((v, n):acc)
 
+-- Problem 87
+-- depthfirst
+-- Depth first order graph traversal (alternative solution)
+depthfirst :: Eq a => Graph a -> a -> [a]
+depthfirst g x = reverse $ search g x [] where
+                    search (Graph xs _) _ seen | length seen == length xs = seen
+                    search (Graph xs es) x seen = foldl' combine (x:seen) next where
+                        combine sofar node = if notElem node sofar then search g node sofar else sofar
+                        next = [y | y <- xs, y `notElem` seen && ((x, y) `elem` es || (y, x) `elem` es)]
+
