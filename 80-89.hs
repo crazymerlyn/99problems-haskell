@@ -150,3 +150,13 @@ depthfirst g x = reverse $ search g x [] where
                         combine sofar node = if notElem node sofar then search g node sofar else sofar
                         next = [y | y <- xs, y `notElem` seen && ((x, y) `elem` es || (y, x) `elem` es)]
 
+
+-- Problem 88
+-- connectedComponents
+-- Write a function that splits a graph into its connected components
+connectedComponents :: Eq a => Graph a -> [[a]]
+connectedComponents (Graph [] _) = []
+connectedComponents g@(Graph xs@(x:_) es) = connectedToX : rest where
+                                            connectedToX = depthfirst g x
+                                            rest = connectedComponents (Graph (xs \\ connectedToX) es)
+
