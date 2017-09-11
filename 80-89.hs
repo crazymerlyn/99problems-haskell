@@ -160,3 +160,11 @@ connectedComponents g@(Graph xs@(x:_) es) = connectedToX : rest where
                                             connectedToX = depthfirst g x
                                             rest = connectedComponents (Graph (xs \\ connectedToX) es)
 
+
+
+-- Problem 89
+-- bipartite
+-- Write a function that finds out if the given graph is bipartite
+bipartite :: (Eq a, Ord a) => Graph a -> Bool
+bipartite g = length (nub (map snd (kcolor g))) == 2
+
